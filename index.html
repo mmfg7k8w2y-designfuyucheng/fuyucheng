@@ -145,10 +145,6 @@
                                         <div class="text-gray-400 text-xs mb-2">应付佣金 (元)</div>
                                         <div class="text-3xl font-bold" contenteditable="true">0.00</div>
                                     </div>
-                                    <div id="brand-commission-field">
-                                        <div class="text-gray-400 text-xs mb-2">品牌广告佣金</div>
-                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
-                                    </div>
                                     <div>
                                         <div class="text-gray-400 text-xs mb-2">季度佣金</div>
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
@@ -157,9 +153,13 @@
                                         <div class="text-gray-400 text-xs mb-2">会广满到账</div>
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
                                     </div>
-                                    
                                     <div>
                                         <div class="text-gray-400 text-xs mb-2">消耗</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">定向奖励</div>
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
                                     </div>
                                     <div>
@@ -170,12 +170,8 @@
                                         <div class="text-gray-400 text-xs mb-2">激励和佣金调整</div>
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
                                     </div>
-                                    <div>
-                                        <div class="text-gray-400 text-xs mb-2">定向奖励</div>
-                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
-                                    </div>
                                 </div>
-                                <div class="mt-8 text-xs text-gray-400" contenteditable="true">当前牌级阵营：- ⓘ</div>
+                                <div class="mt-8 text-xs text-gray-400" id="brand-commission-line" contenteditable="true">品牌广告佣金：0.00</div>
                                 <div class="mt-16 text-right italic text-gray-300 text-xs" contenteditable="true">
                                     走过的路，每一步都算数
                                 </div>
@@ -196,8 +192,8 @@
 
     <script>
         const AUTH_PWD = "duziyiren99。";
-        const STORAGE_KEY = 'crm_secure_data_v3';
-        const OLD_KEY = 'crm_secure_data_v2';
+        const STORAGE_KEY = 'crm_secure_data_final';
+        const LEGACY_KEYS = ['crm_secure_data_v3', 'crm_secure_data_v2'];
         
         function checkPassword() {
             const input = document.getElementById('password-input').value;
@@ -234,33 +230,41 @@
 
         function loadData() { 
             let saved = localStorage.getItem(STORAGE_KEY);
-            let oldSaved = localStorage.getItem(OLD_KEY);
-
-            // 如果没有新版数据但有旧版数据，进行“无损同步”
-            if (!saved && oldSaved) {
-                console.log("检测到旧版数据，正在进行无损合并...");
-                // 暂时把旧数据放入页面
-                editableArea.innerHTML = oldSaved;
-                
-                // 检查是否缺失“品牌广告佣金”栏目
-                if (!document.getElementById('brand-commission-field')) {
-                    const grid = document.getElementById('commission-grid');
-                    if (grid) {
-                        const newField = document.createElement('div');
-                        newField.id = 'brand-commission-field';
-                        newField.innerHTML = `<div class="text-gray-400 text-xs mb-2">品牌广告佣金</div><div class="text-xl font-bold" contenteditable="true">0.00</div>`;
-                        // 插入到应付佣金（第一个子元素）之后
-                        grid.insertBefore(newField, grid.children[1]);
+            
+            // 如果没有最新版，尝试从旧版本迁移
+            if (!saved) {
+                for (let key of LEGACY_KEYS) {
+                    let oldData = localStorage.getItem(key);
+                    if (oldData) {
+                        console.log("正在从旧版本无损迁移数据...");
+                        saved = oldData;
+                        break;
                     }
                 }
-                saveData(); // 立即存入新版 key
-            } else if (saved) {
+            }
+
+            if (saved) {
+                // 核心逻辑：在载入旧数据后，动态修改文本，确保不丢失用户的录入值
                 editableArea.innerHTML = saved;
+                
+                // 1. 查找并替换文本 "当前牌级阵营" 为 "品牌广告佣金"
+                const content = editableArea.innerHTML;
+                if (content.includes("当前牌级阵营")) {
+                    console.log("检测到旧文本，正在替换...");
+                    editableArea.innerHTML = content.replace(/当前牌级阵营：/g, "品牌广告佣金：");
+                }
+                
+                // 2. 移除之前版本中误加在格子里的“品牌广告佣金”（如果存在）
+                const duplicateField = document.getElementById('brand-commission-field');
+                if (duplicateField) {
+                    duplicateField.remove();
+                }
             }
             
             // 恢复 Tab 状态
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab) switchTab(activeTab.id.replace('tab-', ''));
+            saveData();
         }
 
         editableArea.addEventListener('input', saveData);
