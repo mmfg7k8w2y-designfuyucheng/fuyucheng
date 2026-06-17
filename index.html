@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统登录 - 先富业绩管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f0f2f5; font-family: -apple-system, sans-serif; }
+        .login-card { background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; padding: 40px; }
+        #main-content { display: none; }
+        .sidebar-active { border-left: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .card { background: white; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .nav-item-active { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+        [contenteditable="true"]:hover { background: rgba(59, 130, 246, 0.05); outline: 1px dashed #3b82f6; }
+        .edit-hint { position: fixed; bottom: 20px; right: 20px; background: #3b82f6; color: white; padding: 10px 20px; border-radius: 50px; z-index: 100; font-size: 12px; }
+    </style>
+</head>
+<body class="text-sm text-gray-700">
+
+    <!-- 登录界面 -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-100">
+        <div class="login-card">
+            <div class="flex items-center justify-center mb-8">
+                <div class="bg-blue-600 text-white p-2 rounded italic font-bold text-2xl">先富</div>
+            </div>
+            <h2 class="text-center text-xl font-bold mb-6 text-gray-800">业绩管理系统安全验证</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">访问授权码</label>
+                    <input type="password" id="password-input" class="w-full border p-3 rounded focus:outline-blue-500" placeholder="请输入您的私有密码">
+                </div>
+                <button onclick="checkPassword()" class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">解锁进入</button>
+                <p id="error-msg" class="text-red-500 text-xs text-center hidden">密码错误，请重新输入</p>
+            </div>
+            <div class="mt-8 text-center text-gray-400 text-xs">
+                © 2026 阿里巴巴 CRM 数据中心
+            </div>
+        </div>
+    </div>
+
+    <!-- 主体内容 (隐藏) -->
+    <div id="main-content">
+        <nav class="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center space-x-8">
+                <div class="bg-blue-600 text-white p-1 rounded italic font-bold">先富</div>
+                <div class="flex space-x-6">
+                    <a href="#" class="nav-item-active pb-1">个人中心</a>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span>您好：<span contenteditable="true">傅清诚</span></span>
+                <button onclick="location.reload()" class="text-xs text-gray-400 hover:text-red-500">退出登录</button>
+            </div>
+        </nav>
+
+        <div class="flex">
+            <aside class="w-48 bg-slate-900 min-h-screen text-gray-400 p-0">
+                <div class="py-4">
+                    <div class="px-6 py-3 sidebar-active text-white">我的佣金</div>
+                </div>
+            </aside>
+
+            <main class="flex-1 p-6" id="editable-area">
+                <div class="flex space-x-8 mb-4 border-b">
+                    <button class="pb-2 border-b-2 border-blue-600 text-blue-600 font-medium">我的业绩</button>
+                </div>
+
+                <div class="flex items-center space-x-2 mb-6 text-xl font-bold">
+                    <span contenteditable="true">FY27 Q1业绩</span>
+                </div>
+
+                <div class="card p-6 mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-base font-bold mb-1">当前业绩</h3>
+                        <button onclick="localStorage.removeItem('crm_secure_data'); location.reload();" class="text-gray-400 text-xs hover:text-red-500">清除本地缓存数据</button>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-4 items-center">
+                        <div class="col-span-1 border-r pr-4">
+                            <div class="text-3xl font-bold mb-4" contenteditable="true">145,623.90</div>
+                            <div class="grid grid-cols-3 gap-2 text-xs text-gray-400">
+                                <div>新签单量 <div class="font-bold text-gray-800" contenteditable="true">1单</div></div>
+                                <div>完成率 <div class="font-bold text-gray-800" contenteditable="true">0.00%</div></div>
+                                <div>缺口 <div class="font-bold text-gray-800" contenteditable="true">0单</div></div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 flex items-center justify-around">
+                            <div class="text-center p-4 bg-orange-50 rounded min-w-[150px]">
+                                <div class="text-gray-500 mb-1">当日实时业绩</div>
+                                <div class="text-xl font-bold" contenteditable="true">1,257.45</div>
+                            </div>
+                            <span class="text-2xl text-gray-300">+</span>
+                            <div class="text-center p-4 bg-blue-50 rounded min-w-[150px]">
+                                <div class="text-gray-500 mb-1">昨日业绩达成</div>
+                                <div class="text-xl font-bold" contenteditable="true">144,366.45</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 明细表格 -->
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg mb-6">业绩明细</h3>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 border-b">
+                                <th class="p-3 font-medium">订单行号</th>
+                                <th class="p-3 font-medium">客户名称</th>
+                                <th class="p-3 font-medium">客户累计营收</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y" id="table-body">
+                            <tr>
+                                <td class="p-3 text-blue-600" contenteditable="true">P2605301076896314_5</td>
+                                <td class="p-3" contenteditable="true">广州市番禺区中拓电子厂</td>
+                                <td class="p-3 font-bold" contenteditable="true">CNY 46,525.04</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button onclick="addRow()" class="mt-4 text-blue-600 text-xs">+ 添加数据</button>
+                </div>
+            </main>
+        </div>
+        <div class="edit-hint">编辑模式：数据将自动加密保存在您的浏览器中</div>
+    </div>
+
+    <script>
+        const AUTH_PWD = "duziyiren99。";
+        
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            if (input === AUTH_PWD) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        }
+
+        // 回车键登录
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        const editableArea = document.getElementById('editable-area');
+        
+        function loadData() {
+            const saved = localStorage.getItem('crm_secure_data');
+            if(saved) editableArea.innerHTML = saved;
+        }
+
+        editableArea.addEventListener('input', () => {
+            localStorage.setItem('crm_secure_data', editableArea.innerHTML);
+        });
+
+        function addRow() {
+            const tbody = document.getElementById('table-body');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="p-3 text-blue-600" contenteditable="true">P00000000_1</td>
+                <td class="p-3" contenteditable="true">新客户名称</td>
+                <td class="p-3 font-bold" contenteditable="true">CNY 0.00</td>
+            `;
+            tbody.appendChild(newRow);
+            localStorage.setItem('crm_secure_data', editableArea.innerHTML);
+        }
+    </script>
+</body>
+</html>
