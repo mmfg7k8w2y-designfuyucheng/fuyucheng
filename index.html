@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <span>您好：<span contenteditable="true">傅清诚</span></span>
+                <span>您好：<span contenteditable="true" id="user-name">傅清诚</span></span>
                 <button onclick="location.reload()" class="text-xs text-gray-400 hover:text-red-500">退出登录</button>
             </div>
         </nav>
@@ -82,7 +82,7 @@
                         <div class="card p-6 mb-6">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-base font-bold mb-1">当前业绩</h3>
-                                <button onclick="localStorage.removeItem('crm_secure_data_v2'); location.reload();" class="text-gray-400 text-xs hover:text-red-500">重置所有数据</button>
+                                <button onclick="if(confirm('确定要清除所有数据并恢复初始状态吗？')){localStorage.clear(); location.reload();}" class="text-gray-400 text-xs hover:text-red-500">重置所有数据</button>
                             </div>
 
                             <div class="grid grid-cols-4 gap-4 items-center">
@@ -137,17 +137,17 @@
                             <span contenteditable="true">黑名单佣金业务处理政策更新 查看详情</span>
                         </div>
 
-                        <div class="flex items-center text-gray-400 mb-6 cursor-pointer">
-                            <span class="mr-1">&lt;</span> <span contenteditable="true">FY27</span>
-                        </div>
-
                         <div class="flex gap-6">
                             <div class="flex-1 card p-8">
                                 <div class="text-lg font-bold mb-6" contenteditable="true">5月佣金</div>
-                                <div class="grid grid-cols-4 gap-y-10">
+                                <div class="grid grid-cols-4 gap-y-10" id="commission-grid">
                                     <div>
                                         <div class="text-gray-400 text-xs mb-2">应付佣金 (元)</div>
                                         <div class="text-3xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    <div id="brand-commission-field">
+                                        <div class="text-gray-400 text-xs mb-2">品牌广告佣金</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
                                     </div>
                                     <div>
                                         <div class="text-gray-400 text-xs mb-2">季度佣金</div>
@@ -157,12 +157,10 @@
                                         <div class="text-gray-400 text-xs mb-2">会广满到账</div>
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
                                     </div>
+                                    
                                     <div>
                                         <div class="text-gray-400 text-xs mb-2">消耗</div>
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs text-gray-400 mb-2">当前牌级阵营：- ⓘ</div>
                                     </div>
                                     <div>
                                         <div class="text-gray-400 text-xs mb-2">财税佣金</div>
@@ -177,6 +175,7 @@
                                         <div class="text-xl font-bold" contenteditable="true">0.00</div>
                                     </div>
                                 </div>
+                                <div class="mt-8 text-xs text-gray-400" contenteditable="true">当前牌级阵营：- ⓘ</div>
                                 <div class="mt-16 text-right italic text-gray-300 text-xs" contenteditable="true">
                                     走过的路，每一步都算数
                                 </div>
@@ -197,6 +196,8 @@
 
     <script>
         const AUTH_PWD = "duziyiren99。";
+        const STORAGE_KEY = 'crm_secure_data_v3';
+        const OLD_KEY = 'crm_secure_data_v2';
         
         function checkPassword() {
             const input = document.getElementById('password-input').value;
@@ -229,19 +230,39 @@
         }
 
         const editableArea = document.getElementById('editable-area');
-        function saveData() { localStorage.setItem('crm_secure_data_v2', editableArea.innerHTML); }
+        function saveData() { localStorage.setItem(STORAGE_KEY, editableArea.innerHTML); }
+
         function loadData() { 
-            const saved = localStorage.getItem('crm_secure_data_v2');
-            if(saved) {
-                editableArea.innerHTML = saved;
-                // 恢复后的初始状态处理
-                if(document.getElementById('tab-performance').classList.contains('active')) {
-                    switchTab('performance');
-                } else {
-                    switchTab('commission');
+            let saved = localStorage.getItem(STORAGE_KEY);
+            let oldSaved = localStorage.getItem(OLD_KEY);
+
+            // 如果没有新版数据但有旧版数据，进行“无损同步”
+            if (!saved && oldSaved) {
+                console.log("检测到旧版数据，正在进行无损合并...");
+                // 暂时把旧数据放入页面
+                editableArea.innerHTML = oldSaved;
+                
+                // 检查是否缺失“品牌广告佣金”栏目
+                if (!document.getElementById('brand-commission-field')) {
+                    const grid = document.getElementById('commission-grid');
+                    if (grid) {
+                        const newField = document.createElement('div');
+                        newField.id = 'brand-commission-field';
+                        newField.innerHTML = `<div class="text-gray-400 text-xs mb-2">品牌广告佣金</div><div class="text-xl font-bold" contenteditable="true">0.00</div>`;
+                        // 插入到应付佣金（第一个子元素）之后
+                        grid.insertBefore(newField, grid.children[1]);
+                    }
                 }
+                saveData(); // 立即存入新版 key
+            } else if (saved) {
+                editableArea.innerHTML = saved;
             }
+            
+            // 恢复 Tab 状态
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) switchTab(activeTab.id.replace('tab-', ''));
         }
+
         editableArea.addEventListener('input', saveData);
 
         function addRow() {
