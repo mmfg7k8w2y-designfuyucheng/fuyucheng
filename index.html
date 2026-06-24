@@ -12,12 +12,15 @@
         .sidebar-active { border-left: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
         .card { background: white; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .nav-item-active { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+        /* 隐藏编辑痕迹，使其看起来像真实页面 */
         [contenteditable="true"]:focus { outline: none; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
     </style>
 </head>
 <body class="text-sm text-gray-700">
+
+    <!-- 登录界面 -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-100">
         <div class="login-card">
             <div class="flex items-center justify-center mb-8">
@@ -32,19 +35,27 @@
                 <button onclick="checkPassword()" class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">解锁进入</button>
                 <p id="error-msg" class="text-red-500 text-xs text-center hidden">密码错误，请重新输入</p>
             </div>
+            <div class="mt-8 text-center text-gray-400 text-xs">
+                © 2026 阿里巴巴 CRM 数据中心
+            </div>
         </div>
     </div>
+
+    <!-- 主体内容 -->
     <div id="main-content">
         <nav class="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-50">
             <div class="flex items-center space-x-8">
                 <div class="bg-blue-600 text-white p-1 rounded italic font-bold">先富</div>
-                <div class="flex space-x-6"><a href="#" class="nav-item-active pb-1">个人中心</a></div>
+                <div class="flex space-x-6">
+                    <a href="#" class="nav-item-active pb-1">个人中心</a>
+                </div>
             </div>
             <div class="flex items-center space-x-4">
                 <span>您好：<span contenteditable="true" id="user-name">傅淯铖</span></span>
-                <button onclick="location.reload()" class="text-xs text-gray-400 opacity-0 hover:opacity-100">退出登录</button>
+                <button onclick="location.reload()" class="text-xs text-gray-400 hover:text-red-500 opacity-0 hover:opacity-100">退出登录</button>
             </div>
         </nav>
+
         <div class="flex">
             <aside class="w-48 bg-slate-900 min-h-screen text-gray-400 p-0">
                 <div class="py-4">
@@ -53,19 +64,27 @@
                     <div class="px-6 py-3 sidebar-active text-white cursor-pointer">我的佣金</div>
                 </div>
             </aside>
+
             <main class="flex-1 p-6">
+                <!-- Tab 按钮 -->
                 <div class="flex space-x-8 mb-4 border-b">
                     <button id="tab-performance-btn" onclick="switchTab('performance')" class="pb-2 border-b-2 border-blue-600 text-blue-600 font-medium">我的业绩</button>
                     <button id="tab-commission-btn" onclick="switchTab('commission')" class="pb-2 text-gray-500 hover:text-blue-600 font-medium">我的佣金</button>
                 </div>
+
                 <div id="editable-area">
+                    <!-- 我的业绩 Tab 内容 -->
                     <div id="tab-performance" class="tab-content active">
-                        <div class="flex items-center space-x-2 mb-6 text-xl font-bold"><span contenteditable="true">FY27 Q1业绩</span></div>
+                        <div class="flex items-center space-x-2 mb-6 text-xl font-bold">
+                            <span contenteditable="true">FY27 Q1业绩</span>
+                        </div>
+
                         <div class="card p-6 mb-6">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-base font-bold mb-1">当前业绩</h3>
-                                <button onclick="if(confirm('确定重置吗？')){localStorage.clear(); location.reload();}" class="opacity-0 text-gray-300 text-[10px]">RESET</button>
+                                <button onclick="if(confirm('确定重置吗？')){localStorage.clear(); location.reload();}" class="opacity-0 hover:opacity-100 text-gray-300 text-[10px]">RESET</button>
                             </div>
+
                             <div class="grid grid-cols-4 gap-4 items-center">
                                 <div class="col-span-1 border-r pr-4">
                                     <div class="text-3xl font-bold mb-4" contenteditable="true">145,623.90</div>
@@ -88,11 +107,14 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="card p-6">
                             <h3 class="font-bold text-lg mb-6">业绩明细</h3>
                             <table class="w-full text-left border-collapse">
                                 <tbody class="divide-y" id="table-body">
-                                    <tr class="bg-gray-50 text-gray-500 text-xs"><td class="p-3">订单行号</td><td class="p-3">产品名称</td><td class="p-3">客户名称</td><td class="p-3">营收</td></tr>
+                                    <tr class="bg-gray-50 text-gray-500 text-xs">
+                                        <td class="p-3">订单行号</td><td class="p-3">产品名称</td><td class="p-3">客户名称</td><td class="p-3">营收</td>
+                                    </tr>
                                     <tr>
                                         <td class="p-3 text-blue-600" contenteditable="true">P2605301076896314_5</td>
                                         <td class="p-3" contenteditable="true">ICBU-顶级展位-续签</td>
@@ -101,29 +123,62 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <button onclick="addRow()" class="opacity-0 mt-2 text-blue-300 text-[10px]">+ ADD</button>
+                            <button onclick="addRow()" class="opacity-0 hover:opacity-100 mt-2 text-blue-300 text-[10px]">+ ADD</button>
                         </div>
                     </div>
+
+                    <!-- 我的佣金 Tab 内容 -->
                     <div id="tab-commission" class="tab-content">
                         <h2 class="text-xl font-bold mb-4" contenteditable="true">我的佣金</h2>
+                        
                         <div class="bg-orange-50 border border-orange-100 p-3 rounded mb-6 flex items-center text-[10px]">
-                            <span class="text-orange-500 mr-2">ⓘ</span><span contenteditable="true">黑名单佣金业务处理政策更新 查看详情</span>
+                            <span class="text-orange-500 mr-2">ⓘ</span>
+                            <span contenteditable="true">黑名单佣金业务处理政策更新 查看详情</span>
                         </div>
+
                         <div class="flex gap-6">
                             <div class="flex-1 card p-8">
                                 <div class="text-lg font-bold mb-6" contenteditable="true">5月佣金</div>
                                 <div class="grid grid-cols-4 gap-y-10">
-                                    <div><div class="text-gray-400 text-xs mb-2">应付佣金 (元)</div><div class="text-3xl font-bold" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">品牌广告佣金</div><div class="text-3xl font-bold text-gray-800" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">季度佣金</div><div class="text-xl font-bold" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">会广满到账</div><div class="text-xl font-bold" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">消耗</div><div class="text-xl font-bold" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">财税佣金</div><div class="text-xl font-bold" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">激励和佣金调整</div><div class="text-xl font-bold" contenteditable="true">0.00</div></div>
-                                    <div><div class="text-gray-400 text-xs mb-2">定向奖励</div><div class="text-xl font-bold" contenteditable="true">0.00</div></div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">应付佣金 (元)</div>
+                                        <div class="text-3xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">品牌广告佣金</div>
+                                        <div class="text-3xl font-bold text-gray-800" contenteditable="true" id="brand-commission-val">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">季度佣金</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">会广满到账</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">消耗</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">财税佣金</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">激励和佣金调整</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 text-xs mb-2">定向奖励</div>
+                                        <div class="text-xl font-bold" contenteditable="true">0.00</div>
+                                    </div>
                                 </div>
-                                <div class="mt-16 text-right italic text-gray-200 text-[10px]" contenteditable="true">走过的路，每一步都算数</div>
+                                <div class="mt-16 text-right italic text-gray-200 text-[10px]" contenteditable="true">
+                                    走过的路，每一步都算数
+                                </div>
                             </div>
+                            
                             <div class="w-64 card p-8">
                                 <div class="font-bold mb-6" contenteditable="true">FY27累计佣金</div>
                                 <div class="text-gray-400 text-xs mb-2">获得佣金 (元)</div>
@@ -135,23 +190,32 @@
             </main>
         </div>
     </div>
+
     <script>
         const AUTH_PWD = "duziyiren99。";
-        const STORAGE_KEY = 'crm_secure_data_final_v1';
+        const STORAGE_KEY = 'crm_secure_data_v6';
+        const LEGACY_KEYS = ['crm_secure_data_final', 'crm_secure_data_v5', 'crm_secure_data_v3', 'crm_secure_data_v2'];
+        
         function checkPassword() {
             const input = document.getElementById('password-input').value;
             if (input === AUTH_PWD) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
                 loadData();
-            } else { document.getElementById('error-msg').classList.remove('hidden'); }
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
         }
+
         document.getElementById('password-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
+
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
+            
             const perfBtn = document.getElementById('tab-performance-btn');
             const commBtn = document.getElementById('tab-commission-btn');
+            
             if(tab === 'performance') {
                 perfBtn.className = "pb-2 border-b-2 border-blue-600 text-blue-600 font-medium";
                 commBtn.className = "pb-2 text-gray-500 hover:text-blue-600 font-medium";
@@ -161,25 +225,35 @@
             }
             saveData();
         }
+
         const editableArea = document.getElementById('editable-area');
         function saveData() { localStorage.setItem(STORAGE_KEY, editableArea.innerHTML); }
+
         function loadData() { 
             let saved = localStorage.getItem(STORAGE_KEY);
             if (!saved) {
-                for (let i = 0; i < localStorage.length; i++) {
-                    let key = localStorage.key(i);
-                    if (key.startsWith('crm_secure_data')) {
-                        saved = localStorage.getItem(key);
+                for (let key of LEGACY_KEYS) {
+                    let oldData = localStorage.getItem(key);
+                    if (oldData) {
+                        saved = oldData;
                         break;
                     }
                 }
             }
-            if (saved) { editableArea.innerHTML = saved; document.getElementById('user-name').innerText = "傅淯铖"; }
+
+            if (saved) {
+                editableArea.innerHTML = saved;
+                // 无损更新姓名
+                document.getElementById('user-name').innerText = "傅淯铖";
+            }
+            
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab) switchTab(activeTab.id.replace('tab-', ''));
             saveData();
         }
+
         editableArea.addEventListener('input', saveData);
+
         function addRow() {
             const tbody = document.getElementById('table-body');
             const newRow = document.createElement('tr');
